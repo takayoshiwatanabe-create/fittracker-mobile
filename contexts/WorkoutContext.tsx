@@ -4,7 +4,7 @@ import { clearAll, loadWorkouts, saveWorkouts } from '@/utils/storage';
 import { generateId } from '@/utils/id';
 import { getToday } from '@/utils/date';
 
-function workoutReducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
+export function workoutReducer(state: WorkoutState, action: WorkoutAction): WorkoutState {
   switch (action.type) {
     case 'LOADED':
       return { ...state, workouts: action.workouts, isLoading: false, error: null };

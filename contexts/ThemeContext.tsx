@@ -14,7 +14,7 @@ type ThemeAction =
   | { type: 'SET_MODE'; mode: ThemeMode }
   | { type: 'LOADED'; mode: ThemeMode };
 
-function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
+export function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
   switch (action.type) {
     case 'SET_MODE':
       return {
