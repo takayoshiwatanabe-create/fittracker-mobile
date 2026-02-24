@@ -56,11 +56,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   useEffect(() => {
     loadThemePreference().then((saved) => {
-      if (saved === 'dark' || saved === 'light') {
-        dispatch({ type: 'LOADED', mode: saved });
-      } else {
-        dispatch({ type: 'LOADED', mode: (systemScheme ?? 'light') as ThemeMode });
-      }
+      const mode: ThemeMode = saved ?? (systemScheme as ThemeMode | null) ?? 'light';
+      dispatch({ type: 'LOADED', mode });
     });
   }, [systemScheme]);
 

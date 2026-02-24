@@ -41,9 +41,9 @@ export function WorkoutProvider({ children }: WorkoutProviderProps) {
   });
 
   useEffect(() => {
-    loadWorkouts<Workout[]>()
+    loadWorkouts()
       .then((data) => {
-        dispatch({ type: 'LOADED', workouts: data ?? [] });
+        dispatch({ type: 'LOADED', workouts: data });
       })
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'データの読み込みに失敗しました';

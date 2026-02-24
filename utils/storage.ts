@@ -1,24 +1,53 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { Workout } from '@/types/workout';
+import type { ThemeMode } from '@/types/theme';
 
-const WORKOUTS_KEY = 'fittracker_workouts';
-const THEME_KEY = 'fittracker_theme';
+interface StorageSchema {
+  fittracker_workouts: Workout[];
+  fittracker_theme: ThemeMode;
+}
 
-export async function loadWorkouts<T>(): Promise<T | null> {
-  const data = await AsyncStorage.getItem(WORKOUTS_KEY);
-  if (data === null) {
+type StorageKey = keyof StorageSchema;
+
+async function getItem<K extends StorageKey>(
+  key: K
+): Promise<StorageSchema[K] | null> {
+  const raw = await AsyncStorage.getItem(key);
+  if (raw === null) {
     return null;
   }
-  return JSON.parse(data) as T;
+  return JSON.parse(raw) as StorageSchema[K];
 }
 
-export async function saveWorkouts<T>(workouts: T): Promise<void> {
-  await AsyncStorage.setItem(WORKOUTS_KEY, JSON.stringify(workouts));
+async function setItem<K extends StorageKey>(
+  key: K,
+  value: StorageSchema[K]
+): Promise<void> {
+  await AsyncStorage.setItem(key, JSON.stringify(value));
 }
 
-export async function loadThemePreference(): Promise<string | null> {
-  return AsyncStorage.getItem(THEME_KEY);
+async function removeItem(key: StorageKey): Promise<void> {
+  await AsyncStorage.removeItem(key);
 }
 
-export async function saveThemePreference(theme: string): Promise<void> {
-  await AsyncStorage.setItem(THEME_KEY, theme);
+export async function loadWorkouts(): Promise<Workout[]> {
+  const data = await getItem('fittracker_workouts');
+  return data ?? [];
+}
+
+export async function saveWorkouts(workouts: Workout[]): Promise<void> {
+  await setItem('fittracker_workouts', workouts);
+}
+
+export async function loadThemePreference(): Promise<ThemeMode | null> {
+  return getItem('fittracker_theme');
+}
+
+export async function saveThemePreference(mode: ThemeMode): Promise<void> {
+  await setItem('fittracker_theme', mode);
+}
+
+export async function clearAll(): Promise<void> {
+  const keys: StorageKey[] = ['fittracker_workouts', 'fittracker_theme'];
+  await Promise.all(keys.map((key) => AsyncStorage.removeItem(key)));
 }
