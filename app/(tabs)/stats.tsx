@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useWorkouts } from '@/contexts/WorkoutContext';
 import { BarChart } from '@/components/BarChart';
+import { StatsSummary } from '@/components/StatsSummary';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
 import { getDayOfWeekShort, getToday, getWeekDates } from '@/utils/date';
@@ -54,31 +55,8 @@ export default function StatsScreen() {
       <BarChart data={weeklyData} />
 
       <Text style={[styles.sectionTitle, { color: colors.text }]}>今月のサマリー</Text>
-      <View style={[styles.summaryCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <SummaryRow label="合計時間" value={`${monthlySummary.totalDuration}分`} colors={colors} />
-        <SummaryRow label="運動回数" value={`${monthlySummary.totalCount}回`} colors={colors} />
-        <SummaryRow label="平均時間" value={`${monthlySummary.averageDuration}分`} colors={colors} />
-        <SummaryRow label="アクティブ日数" value={`${monthlySummary.activeDays}日`} colors={colors} />
-      </View>
+      <StatsSummary summary={monthlySummary} />
     </ScrollView>
-  );
-}
-
-interface SummaryRowProps {
-  label: string;
-  value: string;
-  colors: { text: string; textSecondary: string; border: string };
-}
-
-function SummaryRow({ label, value, colors }: SummaryRowProps) {
-  return (
-    <View
-      style={[summaryRowStyles.row, { borderBottomColor: colors.border }]}
-      accessibilityLabel={`${label}: ${value}`}
-    >
-      <Text style={[summaryRowStyles.label, { color: colors.textSecondary }]}>{label}</Text>
-      <Text style={[summaryRowStyles.value, { color: colors.text }]}>{value}</Text>
-    </View>
   );
 }
 
@@ -95,28 +73,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 16,
     marginBottom: 12,
-  },
-  summaryCard: {
-    borderRadius: 12,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-});
-
-const summaryRowStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  label: {
-    fontSize: 15,
-  },
-  value: {
-    fontSize: 16,
-    fontWeight: '700',
   },
 });
