@@ -1,13 +1,28 @@
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import React from 'react';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import { WorkoutProvider } from '@/contexts/WorkoutContext';
+
+function RootNavigator() {
+  const { mode } = useTheme();
+
+  return (
+    <>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+      </Stack>
+      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+    </>
+  );
+}
 
 export default function RootLayout() {
   return (
-    <>
-      <Stack>
-        <Stack.Screen name="index" options={{ title: "FitTracker Mobile" }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </>
+    <ThemeProvider>
+      <WorkoutProvider>
+        <RootNavigator />
+      </WorkoutProvider>
+    </ThemeProvider>
   );
 }
