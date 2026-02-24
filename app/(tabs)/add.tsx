@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -19,17 +20,22 @@ import type { WorkoutType } from '@/types/workout';
 
 export default function AddWorkoutScreen() {
   const { colors } = useTheme();
-  const { addWorkout } = useWorkouts();
+  const { addWorkout, isLoading, error } = useWorkouts();
   const router = useRouter();
 
-  const [selectedType, setSelectedType] = useState<WorkoutType>('ランニング');
+  const [selectedType, setSelectedType] = useState<WorkoutType | null>(null);
   const [duration, setDuration] = useState('30');
   const [notes, setNotes] = useState('');
 
   const handleSave = useCallback(() => {
+    if (selectedType === null) {
+      Alert.alert('エラー', '運動種目を選択してください');
+      return;
+    }
+
     const durationNum = parseInt(duration, 10);
-    if (isNaN(durationNum) || durationNum <= 0) {
-      Alert.alert('エラー', '有効な運動時間を入力してください');
+    if (isNaN(durationNum) || durationNum < 1) {
+      Alert.alert('エラー', '運動時間は1分以上で入力してください');
       return;
     }
 
@@ -40,11 +46,27 @@ export default function AddWorkoutScreen() {
       date: getToday(),
     });
 
-    setSelectedType('ランニング');
+    setSelectedType(null);
     setDuration('30');
     setNotes('');
     router.navigate('/(tabs)');
   }, [selectedType, duration, notes, addWorkout, router]);
+
+  if (isLoading) {
+    return (
+      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+        <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -156,6 +178,16 @@ export default function AddWorkoutScreen() {
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    textAlign: 'center',
+    paddingHorizontal: 24,
+  },
   container: {
     flex: 1,
   },
