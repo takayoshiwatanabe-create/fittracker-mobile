@@ -53,7 +53,10 @@ export function WorkoutProvider({ children }: WorkoutProviderProps) {
 
   useEffect(() => {
     if (!state.isLoading) {
-      saveWorkouts(state.workouts);
+      saveWorkouts(state.workouts).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : 'データの保存に失敗しました';
+        dispatch({ type: 'LOAD_ERROR', error: message });
+      });
     }
   }, [state.workouts, state.isLoading]);
 
@@ -70,16 +73,20 @@ export function WorkoutProvider({ children }: WorkoutProviderProps) {
   }, []);
 
   const updateWorkout = useCallback((id: string, data: WorkoutFormData) => {
+    const existing = state.workouts.find((w) => w.id === id);
+    if (!existing) {
+      return;
+    }
     const workout: Workout = {
       id,
       date: data.date,
       type: data.type,
       duration: data.duration,
       notes: data.notes,
-      createdAt: new Date().toISOString(),
+      createdAt: existing.createdAt,
     };
     dispatch({ type: 'UPDATE', workout });
-  }, []);
+  }, [state.workouts]);
 
   const deleteWorkout = useCallback((id: string) => {
     dispatch({ type: 'DELETE', id });
