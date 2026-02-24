@@ -55,7 +55,8 @@ export type WorkoutAction =
   | { type: 'LOAD_ERROR'; error: string }
   | { type: 'ADD'; workout: Workout }
   | { type: 'UPDATE'; workout: Workout }
-  | { type: 'DELETE'; id: string };
+  | { type: 'DELETE'; id: string }
+  | { type: 'RESET' };
 
 export interface WorkoutContextValue {
   workouts: Workout[];
@@ -64,6 +65,7 @@ export interface WorkoutContextValue {
   addWorkout: (data: WorkoutFormData) => void;
   updateWorkout: (id: string, data: WorkoutFormData) => void;
   deleteWorkout: (id: string) => void;
+  resetAll: () => Promise<void>;
   getWorkoutsByDate: (date: string) => Workout[];
   getTodayWorkouts: () => Workout[];
 }

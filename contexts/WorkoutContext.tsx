@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 import type { Workout, WorkoutAction, WorkoutContextValue, WorkoutFormData, WorkoutState } from '@/types/workout';
-import { loadWorkouts, saveWorkouts } from '@/utils/storage';
+import { clearAll, loadWorkouts, saveWorkouts } from '@/utils/storage';
 import { generateId } from '@/utils/id';
 import { getToday } from '@/utils/date';
 
@@ -24,6 +24,8 @@ function workoutReducer(state: WorkoutState, action: WorkoutAction): WorkoutStat
         ...state,
         workouts: state.workouts.filter((w) => w.id !== action.id),
       };
+    case 'RESET':
+      return { ...state, workouts: [], error: null };
   }
 }
 
@@ -92,6 +94,11 @@ export function WorkoutProvider({ children }: WorkoutProviderProps) {
     dispatch({ type: 'DELETE', id });
   }, []);
 
+  const resetAll = useCallback(async () => {
+    await clearAll();
+    dispatch({ type: 'RESET' });
+  }, []);
+
   const getWorkoutsByDate = useCallback(
     (date: string) => state.workouts.filter((w) => w.date === date),
     [state.workouts]
@@ -111,6 +118,7 @@ export function WorkoutProvider({ children }: WorkoutProviderProps) {
         addWorkout,
         updateWorkout,
         deleteWorkout,
+        resetAll,
         getWorkoutsByDate,
         getTodayWorkouts,
       }}
